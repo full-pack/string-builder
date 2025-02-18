@@ -9,8 +9,7 @@ class StringBuilder {
     constructor(str: string, capacity: number)
 
     constructor(str?: string, capacity?: number) {
-        if (typeof str === 'string' || typeof str === 'boolean' || typeof str === 'number') this._str = String(str)
-        else this._str = ''
+        this._str = String(str ?? '')
         if (typeof capacity === 'number' && isFinite(capacity) && capacity > -1) {
             this._cap = capacity
             this._str = this._str.slice(undefined, capacity)
@@ -20,11 +19,12 @@ class StringBuilder {
     insert(index: number, value: number | string | boolean, repeatCount: number = 1): boolean {
         if (index > -1 && index < this._str.length) {
             value = value.toString()
-            let repeated = ''
-            for (; repeatCount > 0; repeatCount--) repeated = repeated.concat(value)
-            const inserted = this._str.slice(undefined, index) + repeated + this._str.slice(index)
-            if (this.checkCapacity(inserted)) {
-                this._str = inserted
+            const operating = [this._str.slice(undefined, index)]
+            for (; repeatCount > 0; repeatCount--) operating.push(value)
+            operating.push(this._str.slice(index))
+            const insertion = operating.join('')
+            if (this.checkCapacity(insertion.length)) {
+                this._str = insertion
                 return true
             }
             return false
@@ -33,10 +33,10 @@ class StringBuilder {
 
     append(value: number | string | boolean, repeatCount: number = 1): boolean {
         value = value.toString()
-        let repeated = ''
-        for (; repeatCount > 0; repeatCount--) repeated = repeated.concat(value)
-        const appended = this._str.concat(repeated)
-        if (this.checkCapacity(appended)) {
+        const operating = [this._str]
+        for (; repeatCount > 0; repeatCount--) operating.push(value)
+        const appended = operating.join('')
+        if (this.checkCapacity(appended.length)) {
             this._str = appended
             return true
         }
@@ -45,10 +45,11 @@ class StringBuilder {
 
     prepend(value: number | string | boolean, repeatCount: number = 1): boolean {
         value = value.toString()
-        let repeated = ''
-        for (; repeatCount > 0; repeatCount--) repeated = repeated.concat(value)
-        const prepended = repeated.toString().concat(this._str)
-        if (this.checkCapacity(prepended)) {
+        const operating = []
+        for (; repeatCount > 0; repeatCount--) operating.push(value)
+        operating.push(this._str)
+        const prepended = operating.join('')
+        if (this.checkCapacity(prepended.length)) {
             this._str = prepended
             return true
         }
@@ -56,10 +57,10 @@ class StringBuilder {
     }
 
     appendNewLine(num: number = 1): boolean {
-        let lineBreaks = ''
-        for (; num > 0; num--) lineBreaks = lineBreaks.concat('\u000a')
-        const appended = this._str.concat(lineBreaks)
-        if (this.checkCapacity(appended)) {
+        const operating = [this._str]
+        for (; num > 0; num--) operating.push('\u000a')
+        const appended = operating.join('')
+        if (this.checkCapacity(appended.length)) {
             this._str = appended
             return true
         }
@@ -67,10 +68,11 @@ class StringBuilder {
     }
 
     prependNewLine(num: number = 1): boolean {
-        let lineBreaks = ''
-        for (; num > 0; num--) lineBreaks = lineBreaks.concat('\u000a')
-        const prepended = lineBreaks.concat(this._str)
-        if (this.checkCapacity(prepended)) {
+        const operating = []
+        for (; num > 0; num--) operating.push('\u000a')
+        operating.push(this._str)
+        const prepended = operating.join('')
+        if (this.checkCapacity(prepended.length)) {
             this._str = prepended
             return true
         }
@@ -78,10 +80,10 @@ class StringBuilder {
     }
 
     appendSpace(num: number = 1): boolean {
-        let spaces = ''
-        for (; num > 0; num--) spaces = spaces.concat('\u0020')
-        const appended = this._str.concat(spaces)
-        if (this.checkCapacity(appended)) {
+        const operating = [this._str]
+        for (; num > 0; num--) operating.push('\u0020')
+        const appended = operating.join('')
+        if (this.checkCapacity(appended.length)) {
             this._str = appended
             return true
         }
@@ -89,10 +91,11 @@ class StringBuilder {
     }
 
     prependSpace(num: number = 1): boolean {
-        let spaces = ''
-        for (; num > 0; num--) spaces = spaces.concat('\u0020')
-        const prepended = spaces.concat(this._str)
-        if (this.checkCapacity(prepended)) {
+        const operating = []
+        for (; num > 0; num--) operating.push('\u0020')
+        operating.push(this._str)
+        const prepended = operating.join('')
+        if (this.checkCapacity(prepended.length)) {
             this._str = prepended
             return true
         }
@@ -100,9 +103,8 @@ class StringBuilder {
     }
 
     appendArray(arr: Array<number | string | boolean>, separator: string = ''): boolean {
-        const merged = arr.join(separator)
-        const appended = this._str.concat(merged)
-        if (this.checkCapacity(appended)) {
+        const appended = this._str.concat(arr.join(separator))
+        if (this.checkCapacity(appended.length)) {
             this._str = appended
             return true
         }
@@ -110,9 +112,8 @@ class StringBuilder {
     }
 
     prependArray(arr: Array<number | string | boolean>, separator: string = ''): boolean {
-        const merged = arr.join(separator)
-        const prepended = merged.concat(this._str)
-        if (this.checkCapacity(prepended)) {
+        const prepended = arr.join(separator).concat(this._str)
+        if (this.checkCapacity(prepended.length)) {
             this._str = prepended
             return true
         }
@@ -120,46 +121,48 @@ class StringBuilder {
     }
 
     appendJSON(json: Record<any, any> | Array<Record<any, any>>, space?: string | number): boolean {
-        let appended = ''
+        const operating = [this._str]
         if (Array.isArray(json)) {
-            json.forEach((value) => (appended = appended.concat(JSON.stringify(value, undefined, space))))
+            json.forEach((value) => operating.push(JSON.stringify(value, undefined, space)))
         } else {
-            appended = appended.concat(JSON.stringify(json, undefined, space))
+            operating.push(JSON.stringify(json, undefined, space))
         }
-        if (this.checkCapacity(this._str + appended)) {
-            this._str = this._str.concat(appended)
+        const appended = operating.join('')
+        if (this.checkCapacity(appended.length)) {
+            this._str = appended
             return true
         }
         return false
     }
 
     prependJSON(json: Record<any, any> | Array<Record<any, any>>, space?: string | number): boolean {
-        let prepended = ''
+        const operating = []
         if (Array.isArray(json)) {
-            json.forEach((value) => (prepended = JSON.stringify(value, undefined, space).concat(prepended)))
+            json.forEach((value) => operating.push(JSON.stringify(value, undefined, space)))
         } else {
-            prepended = prepended.concat(JSON.stringify(json, undefined, space))
+            operating.push(JSON.stringify(json, undefined, space))
         }
-        if (this.checkCapacity(prepended + this._str)) {
-            this._str = prepended.concat(this._str)
+        const prepended = operating.join('') + this._str
+        if (this.checkCapacity(prepended.length)) {
+            this._str = prepended
             return true
         }
         return false
     }
 
     appendCodePoint(...codePoints: number[]): boolean {
-        const appended = String.fromCodePoint(...codePoints)
-        if (this.checkCapacity(this._str + appended)) {
-            this._str = this._str.concat(appended)
+        const appended = this._str + String.fromCodePoint(...codePoints)
+        if (this.checkCapacity(appended.length)) {
+            this._str = appended
             return true
         }
         return false
     }
 
     prependCodePoint(...codePoints: number[]): boolean {
-        const prepended = String.fromCodePoint(...codePoints)
-        if (this.checkCapacity(prepended + this._str)) {
-            this._str = prepended.concat(this._str)
+        const prepended = String.fromCodePoint(...codePoints) + this._str
+        if (this.checkCapacity(prepended.length)) {
+            this._str = prepended
             return true
         }
         return false
@@ -171,17 +174,18 @@ class StringBuilder {
             // If str is string else it is replacer
             if (typeof str === 'string') {
                 // If capacity is -1 OR capacity is more than equal to given str
-                if (this.checkCapacity(str)) {
+                if (this.checkCapacity(str.length)) {
                     this._str = str
                     return true
                 }
             } else {
-                let replacementString: string = ''
+                const operating: string[] = []
                 for (let i = 0; i < this._str.length; i++) {
-                    replacementString += str(this._str[i], i, this._str)
+                    operating.push(str(this._str[i], i, this._str))
                 }
+                const replacementString = operating.join('')
                 // If capacity is -1 OR capacity is more than equal to replacementString
-                if (this.checkCapacity(replacementString)) {
+                if (this.checkCapacity(replacementString.length)) {
                     this._str = replacementString
                     return true
                 }
@@ -199,7 +203,7 @@ class StringBuilder {
         if (typeof str === 'string') {
             replacementString = this._str.slice(undefined, start) + str + this._str.slice(end)
             // If capacity is -1 OR capacity is more than equal to replacementString
-            if (this.checkCapacity(replacementString)) {
+            if (this.checkCapacity(replacementString.length)) {
                 this._str = replacementString
                 return true
             }
@@ -209,7 +213,7 @@ class StringBuilder {
             }
             replacementString = this._str.slice(undefined, start) + replacementString + this._str.slice(end)
             // If capacity is -1 OR capacity is more than equal to replacementString
-            if (this.checkCapacity(replacementString)) {
+            if (this.checkCapacity(replacementString.length)) {
                 this._str = replacementString
                 return true
             }
@@ -218,15 +222,15 @@ class StringBuilder {
     }
 
     setString(value: string): boolean {
-        if (this.checkCapacity(value)) {
+        if (this.checkCapacity(value.length)) {
             this._str = value
             return true
         }
         return false
     }
 
-    private checkCapacity(optString: string): boolean {
-        return this._cap === -1 || this._cap >= optString.length
+    private checkCapacity(newStrLen: number): boolean {
+        return this._cap === -1 || this._cap >= newStrLen
     }
 
     getString(): string {
@@ -277,12 +281,16 @@ class StringBuilder {
         if (typeof value === 'number' && isFinite(value) && value > -1) this._str = this._str.slice(undefined, value)
     }
 
-    // removes string
+    /**
+     * Only removes the string.
+     */
     clear(): void {
         this._str = ''
     }
 
-    // removes string & capacity
+    /**
+     * Removes string & capacity.
+     */
     reset(): void {
         this._str = ''
         this._cap = -1

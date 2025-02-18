@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@full-pack/string-builder.svg)](https://www.npmjs.com/package/@full-pack/string-builder)
 
+[![codecov](https://codecov.io/gh/full-pack/string-builder/graph/badge.svg?token=SSEPV5BS4C)](https://codecov.io/gh/full-pack/string-builder)
 [![jest](https://jestjs.io/img/jest-badge.svg)](https://github.com/jestjs/jest) [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 A lightweight and versatile String Utility Package for Node.js & Browser.

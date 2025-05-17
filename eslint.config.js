@@ -1,47 +1,57 @@
-    'use strict'
+'use strict'
 
-    import stylistic from '@stylistic/eslint-plugin'
-    import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
-    import jest from 'eslint-plugin-jest'
-    import love from 'eslint-config-love'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import stylistic from '@stylistic/eslint-plugin'
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
+import jest from 'eslint-plugin-jest'
+import love from 'eslint-config-love'
 
-    export default [
-        {
-            ignores: ['dist', '**/*.js']
+
+export default defineConfig([
+    globalIgnores(['dist/', '**/*.js']),
+    {
+        files: ['**/*.ts']
+    },
+    // Stylistic
+    {
+        plugins: {
+            '@stylistic': stylistic
         },
-        // Stylistic
-        {
-            plugins: {
-                '@stylistic': stylistic
-            },
-            rules: {
-                '@stylistic/indent': ['error', 4],
-                '@stylistic/quotes': ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
-                '@stylistic/space-before-function-paren': 'off',
-                '@stylistic/no-unmodified-loop-condition': 'off'
-            }
-        },
-        // eslint-config-love
-        {
-            ...love
-        },
-        // Jest
-        {
-            files: ['test/**/*.test.ts', 'tests/**/*.test.ts', 'test/**/*.spec.ts', 'tests/**/*.spec.ts'],
-            ...jest.configs['flat/recommended'],
-            rules: {
-                ...jest.configs['flat/recommended'].rules,
-                ...jest.configs['flat/style'].rules
-            }
-        },
-        // Prettier
-        eslintPluginPrettierRecommended,
-        // Custom
-        {
-            rules:{
-                'max-nested-callbacks': 'off',
-                'max-lines': 'off'
-            },
-            files: ['tests/**.test.ts']
+        rules: {
+            '@stylistic/indent': ['error', 4],
+            '@stylistic/quotes': ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
+            '@stylistic/space-before-function-paren': 'off',
+            '@stylistic/no-unmodified-loop-condition': 'off',
+            '@typescript-eslint/no-magic-numbers': 'off'
         }
-    ]
+    },
+    // eslint-config-love
+    {
+        ...love
+    },
+    // Jest
+    {
+        files: ['test/**/*.test.ts', 'tests/**/*.test.ts', 'test/**/*.spec.ts', 'tests/**/*.spec.ts'],
+        ...jest.configs['flat/recommended'],
+        rules: {
+            ...jest.configs['flat/recommended'].rules,
+            ...jest.configs['flat/style'].rules
+        }
+    },
+    // Prettier
+    eslintPluginPrettierRecommended,
+    // Custom
+    {
+        rules: {
+            'max-nested-callbacks': 'off',
+            'max-lines': 'off'
+        },
+        files: ['tests/**.test.ts']
+    },
+    {
+        files: ['**/*.ts'],
+        rules: {
+            '@typescript-eslint/no-magic-numbers': 'off'
+        }
+    }
+])

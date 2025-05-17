@@ -13,18 +13,26 @@ interface Result {
     js?: string
 }
 
-function generateLicense(): string {
-    const packInfo = JSON.parse(readFileSync('package.json').toString())
-    return `/**\n * ${packInfo.name} v${packInfo.version}\n * Copyright (c) 2024 Ram Amoncar <ramamonkar444@gmail.com>\n * @license ${packInfo.license}\n */`
+interface PackageJson {
+    name?: string
+    version?: string
+    license?: string
+    [key: string]: unknown // Allow other fields
 }
-
-const license = generateLicense()
 
 function outputExtensions(ctx: Context): Result {
     if (ctx.format === 'cjs') return { js: '.js' }
     if (ctx.format === 'esm') return { js: '.mjs' }
     return { js: '.min.js' }
 }
+
+function generateLicense(): string {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- JSON.parse output is assumed to match PackageJson structure based on known package.json format */
+    const packInfo = JSON.parse(readFileSync('package.json').toString()) as PackageJson
+    return `/**\n * ${packInfo.name} v${packInfo.version}\n * Copyright (c) 2024 Ram Amoncar <ramamonkar444@gmail.com>\n * @license ${packInfo.license}\n */`
+}
+
+const license = generateLicense()
 
 export default defineConfig({
     splitting: false,

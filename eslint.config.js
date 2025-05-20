@@ -6,7 +6,6 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 import jest from 'eslint-plugin-jest'
 import love from 'eslint-config-love'
 
-
 export default defineConfig([
     globalIgnores(['dist/', '**/*.js']),
     {
